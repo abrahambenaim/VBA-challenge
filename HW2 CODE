@@ -1,0 +1,114 @@
+Sub Wallstreet()
+
+Dim Ticker_Name As String
+Dim Volume_Total As Double
+  Volume_Total = 0
+Dim YearlyOpen As Double
+Dim YearlyClose As Double
+Dim YearlyChange As Double
+Dim PreviousAmount As Long
+    PreviousAmount = 2
+Dim PercentChange As Double
+Dim Summary_Table_Row As Integer
+  Summary_Table_Row = 2
+  
+Dim LR As Long
+  LR = Cells(Rows.Count, 1).End(xlUp).Row
+    
+
+Range("I1").Value = "Ticker"
+Range("J1").Value = "Yearly Change"
+Range("k1").Value = "Percent Change"
+Range("L1").Value = "Total Stock Volume"
+Range("P1").Value = "Ticker"
+Range("Q1").Value = "Value"
+Range("O2").Value = "Greatest % Increase"
+Range("O3").Value = "Greatest % Decrease"
+Range("O4").Value = "Greatest Total Volume"
+
+
+  For I = 2 To LR
+  
+  If Cells(I + 1, 1).Value <> Cells(I, 1).Value Then
+  
+    Ticker_Name = Cells(I, 1).Value
+    
+    Volume_Total = Volume_Total + Cells(I, 7).Value
+                
+    Range("I" & Summary_Table_Row).Value = Ticker_Name
+    Range("L" & Summary_Table_Row).Value = Volume_Total
+    
+
+    YearlyOpen = Range("C" & PreviousAmount)
+    
+    YearlyClose = Range("F" & I)
+    
+    YearlyChange = YearlyClose - YearlyOpen
+    
+    Range("J" & Summary_Table_Row).Value = YearlyChange
+    
+    If YearlyOpen = 0 Then
+    PercentChange = 0
+        Else
+            YearlyOpen = Range("C" & PreviousAmount)
+            PercentChange = YearlyChange / YearlyOpen
+    End If
+    
+    Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+    Range("K" & Summary_Table_Row).Value = PercentChange
+
+
+    Summary_Table_Row = Summary_Table_Row + 1
+    
+    Volume_Total = 0
+    Else
+    
+    Volume_Total = Volume_Total + Cells(I, 7).Value
+  
+  End If
+  
+  If Range("J" & Summary_Table_Row).Value >= 0 Then
+  Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+  Else
+  Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+  End If
+  
+  Next I
+  
+  Dim LRSummary As Long
+  LRSummary = Cells(Rows.Count, 9).End(xlUp).Row
+  
+  For I = 2 To LRSummary
+  
+  If Range("K" & I).Value > Range("Q2").Value Then
+                    Range("Q2").Value = Range("K" & I).Value
+                    Range("P2").Value = Range("I" & I).Value
+                End If
+                
+If Range("K" & I).Value < Range("Q3").Value Then
+                    Range("Q3").Value = Range("K" & I).Value
+                    Range("P3").Value = Range("I" & I).Value
+                End If
+                
+If Range("L" & I).Value > Range("Q4").Value Then
+                    Range("Q4").Value = Range("L" & I).Value
+                    Range("P4").Value = Range("I" & I).Value
+                End If
+  
+  
+  Next I
+  
+Range("Q2").NumberFormat = "0.00%"
+Range("Q3").NumberFormat = "0.00%"
+
+Range("O1:Q4").BorderAround ColorIndex:=4, Weight:=xlThick
+Range("O1:Q4").Font.Bold = True
+
+Range("I1:L1").BorderAround ColorIndex:=1
+Range("I1:L1").Font.Bold = True
+  
+For Each sht In ThisWorkbook.Worksheets
+    sht.Cells.EntireColumn.AutoFit
+  Next sht
+
+  End Sub
